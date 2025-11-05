@@ -24,7 +24,7 @@
     </style>
 </head>
 <body>
-    <a href="/logout">Kirjaudu ulos</a>
+    <a href="/admin/logout">Kirjaudu ulos</a>
     
     {% if message %}
     <p>{{ message }}</p>
@@ -36,10 +36,10 @@
     {% endfor %}
     
     <div class="actions">
-        <form method="POST" action="/register">
+        <form method="POST" action="/admin/register">
             <button>Rekisteröi</button>
         </form>
-        <form method="POST" action="/clear">
+        <form method="POST" action="/admin/clear">
             <button>Tyhjennä kaikki</button>
         </form>
     </div>
