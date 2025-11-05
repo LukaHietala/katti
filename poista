@@ -1,5 +1,0 @@
-curl -X PUT \
-  "https://discord.com/api/v10/applications/1435161129415344208/commands" \
-  -H "Authorization: Bot MTQzNTE2MTEyOTQxNTM0NDIwOA.GhZfkd.sef1yEVOPRzIonJQbTpPE27dGl_XoHqvFVYtb0" \
-  -H "Content-Type: application/json" \
-  -d '[]'

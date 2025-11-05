@@ -1,0 +1,6 @@
+{% if message %}<p>{{ message }}</p>{% endif %}
+{% for cmd in commands %}
+<p>/{{ cmd.name }} - {{ cmd.description }}</p>
+{% endfor %}
+<form method="POST" action="/register"><button>Register</button></form>
+<form method="POST" action="/clear"><button>Clear All</button></form>
