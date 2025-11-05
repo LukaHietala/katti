@@ -5,11 +5,15 @@ from flask import Flask, request, jsonify, render_template, redirect, session
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from dotenv import load_dotenv
+import database
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+
+# alustaa tietokannan automaattisesti
+database.init()
 
 PUBLIC_KEY = os.getenv("DISCORD_PUBLIC_KEY")
 APP_ID = os.getenv("DISCORD_APP_ID")
@@ -67,9 +71,15 @@ def interactions():
         if command_name == "kissa":
             options = data.get("data", {}).get("options", [])
             tag = options[0].get("value", "") if options else ""
+            user = data.get("member", {}).get("user") or data.get("user", {})
+            user_id = user.get("id", "tuntematon?")
+            username = user.get("username", "tuntematon?")
             
             try:
                 image_url = get_cat(tag)
+                
+                database.save_cat(user_id, username, image_url, tag if tag else None)
+                
                 return jsonify({
                     "type": 4,
                     "data": {"embeds": [{"image": {"url": image_url}}]}
@@ -86,12 +96,21 @@ def interactions():
     return jsonify({"error": "unknown interaction"}), 400
 
 
+# julkinen kissojen galleria
+@app.route("/cats")
+def cats_page():
+    all_cats = database.get_all_cats(limit=1000)
+    return render_template("cats.html", cats=all_cats)
+
 # admin hommat
 @app.route("/admin")
 def admin_index():
     if not session.get("op"):
         return redirect("/admin/login")
-    return render_template("admin.html", commands=requests.get(BASE_URL, headers=HEADERS).json())
+    
+    all_cats = database.get_all_cats(limit=1000)
+    
+    return render_template("admin.html", commands=requests.get(BASE_URL, headers=HEADERS).json(), cats=all_cats)
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():

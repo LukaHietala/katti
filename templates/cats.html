@@ -3,23 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katin hallinta</title>
+    <title>Katit</title>
     <style>
         body {
             max-width: 600px;
             margin: 50px auto;
             padding: 20px;
-        }
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .actions form {
-            flex: 1;
-        }
-        .actions button {
-            width: 100%;
         }
         .cat-item {
             display: flex;
@@ -42,25 +31,6 @@
     </style>
 </head>
 <body>
-    <a href="/admin/logout">Kirjaudu ulos</a>
-    
-    {% if message %}
-    <p>{{ message }}</p>
-    {% endif %}
-
-    <h3>Komennot:</h3>
-    {% for cmd in commands %}
-    <p>/{{ cmd.name }} - {{ cmd.description }}</p>
-    {% endfor %}
-    
-    <div class="actions">
-        <form method="POST" action="/admin/register">
-            <button>Rekisteröi</button>
-        </form>
-        <form method="POST" action="/admin/clear">
-            <button>Tyhjennä kaikki</button>
-        </form>
-    </div>
     <h3>Kisumirrejä:</h3>
     {% if cats %}
     <p>Yhteensä: {{ cats|length }} kissaa</p>
