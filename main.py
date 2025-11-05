@@ -97,10 +97,10 @@ def interactions():
 
 
 # julkinen kissojen galleria
-@app.route("/cats")
+@app.route("/kissat")
 def cats_page():
     all_cats = database.get_all_cats(limit=1000)
-    return render_template("cats.html", cats=all_cats)
+    return render_template("kissat.html", cats=all_cats)
 
 # admin hommat
 @app.route("/admin")
