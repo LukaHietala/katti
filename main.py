@@ -68,7 +68,7 @@ def interactions():
                 return jsonify({
                     "type": 4,
                     "data": {
-                        "content": "Sopivan kissan löytyminen ei onnistunut",
+                        "embeds": [{"image": {"url": "https://i.pinimg.com/236x/5e/ba/fa/5ebafa8eb9235024a3fa8b683763f3b8.jpg"}}],
                         "flags": 64 # ephemeral viesti
                     }
                 })
