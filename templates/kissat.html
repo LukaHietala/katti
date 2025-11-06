@@ -36,7 +36,9 @@
     <p>Yhteensä: {{ cats|length }} kissaa</p>
     {% for cat in cats %}
     <div class="cat-item">
-        <img src="/kuvat/{{ cat.image_url.split('https://cataas.com/')[1].split('&')[0] }}" alt="söpö kissa">
+        <a href="{{ cat.image_url.split('&')[0] }}" target="_blank">
+            <img src="/kuvat/{{ cat.image_url.split('https://cataas.com/')[1].split('&')[0] }}" alt="söpö kissa">
+        </a>
         <div class="cat-info">
             <p><b>{{ cat.username }}</b></p>
             <p>Tag: {{ cat.tag or '-' }}</p>
