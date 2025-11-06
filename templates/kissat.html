@@ -34,6 +34,7 @@
     <h3>Kisumirrejä:</h3>
     {% if cats %}
     <p>Yhteensä: {{ cats|length }} kissaa</p>
+    <a href="/admin">Hallintapaneeli</a>
     {% for cat in cats %}
     <div class="cat-item">
         <a href="{{ cat.image_url.split('&')[0] }}" target="_blank">
