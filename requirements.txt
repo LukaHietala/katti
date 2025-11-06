@@ -2,3 +2,4 @@ flask
 requests
 PyNaCl
 python-dotenv
+gunicorn
