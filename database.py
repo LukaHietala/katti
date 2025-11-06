@@ -64,6 +64,15 @@ def get_all_cats(limit):
 
     return cats
 
+# :(
+def delete_cat(id):
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+
+    cur.execute("DELETE FROM cats WHERE id = ?", (id,))
+    con.commit()
+    con.close()
+
 """
 tulevaisuudessa tilastoihin... 
 

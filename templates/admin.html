@@ -74,6 +74,9 @@
             <p>Tag: {{ cat.tag or '-' }}</p>
             <p>{{ cat.timestamp }}</p>
         </div>
+        <form method="POST" action="/admin/delete/{{ cat.id }}">
+            <button>Poista</button>
+        </form>
     </div>
     {% endfor %}
     {% else %}

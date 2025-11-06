@@ -147,6 +147,13 @@ def admin_clear():
     requests.put(BASE_URL, json=[], headers=HEADERS)
     return redirect("/admin")
 
+@app.route("/admin/delete/<int:cat_id>", methods=["POST"])
+def admin_delete_cat(cat_id):
+    if not session.get("op"):
+        return redirect("/admin/login")
+    database.delete_cat(cat_id)
+    return redirect("/admin")
+
 # cachettaa kissakuvat serverille, ettei apia tarvi rasittaa 😇
 @app.route("/kuvat/<path:image_path>")
 def cache_image(image_path):
