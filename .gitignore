@@ -1,3 +1,4 @@
 .env
 __pycache__/
 kissat.db
+static/cache/

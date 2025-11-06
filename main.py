@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from flask import Flask, request, jsonify, render_template, redirect, session
+from flask import Flask, request, jsonify, render_template, redirect, session, send_file
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 from dotenv import load_dotenv
@@ -146,6 +146,30 @@ def admin_clear():
         return redirect("/admin/login")
     requests.put(BASE_URL, json=[], headers=HEADERS)
     return redirect("/admin")
+
+# cachettaa kissakuvat serverille, ettei apia tarvi rasittaa 😇
+@app.route("/kuvat/<path:image_path>")
+def cache_image(image_path):
+    cache_dir = "static/cache"
+    os.makedirs(cache_dir, exist_ok=True)
+    
+    # alkuperäinen cat/dGHQY0rqSzbmiaJO?position=center url
+    filename = image_path.replace("/", "_")
+    cache_path = os.path.join(cache_dir, filename)
+    # -> cat_dGHQY0rqSzbmiaJO tiedostopolku
+    
+    # lataa jos ei cachessa
+    if not os.path.exists(cache_path):
+        try:
+            img_url = f"https://cataas.com/{image_path}"
+            response = requests.get(img_url, timeout=10)
+            with open(cache_path, 'wb') as f:
+                f.write(response.content)
+        except:
+            return "virhe", 404
+    
+    # lähetä kuva clientille
+    return send_file(cache_path)
 
 
 if __name__ == "__main__":
