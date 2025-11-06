@@ -47,7 +47,7 @@ def get_cat(tag=""):
     return f"{cat_data['url']}&t={time.time_ns()}"
 
 
-@app.route("/", methods=["POST"])
+@app.route("/api", methods=["POST"])
 def interactions():
     signature = request.headers.get("X-Signature-Ed25519")
     timestamp = request.headers.get("X-Signature-Timestamp")
@@ -97,10 +97,15 @@ def interactions():
 
 
 # julkinen kissojen galleria
-@app.route("/kissat")
+@app.route("/")
 def cats_page():
     all_cats = database.get_all_cats(limit=1000)
     return render_template("kissat.html", cats=all_cats)
+
+# jäännös
+@app.route("/kissat")
+def kissat_empty():
+    return render_template("empty.html")
 
 # admin hommat
 @app.route("/admin")
