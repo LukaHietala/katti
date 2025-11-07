@@ -36,6 +36,7 @@
     <p>Yhteensä: {{ cats|length }} kissaa</p>
     <a href="/admin">Hallintapaneeli</a>
     {% for cat in cats %}
+    {% set cat_id = cat.image_url.split('/cat/')[1].split('?')[0].split('/')[0] %}
     <div class="cat-item">
         <a href="{{ cat.image_url.split('&')[0] }}" target="_blank">
             <img src="/kuvat/{{ cat.image_url.split('https://cataas.com/')[1].split('&')[0] }}" alt="söpö kissa">
@@ -45,6 +46,9 @@
             <p>Tag: {{ cat.tag or '-' }}</p>
             <p>{{ cat.timestamp }}</p>
         </div>
+        <span>
+            <button onclick="navigator.clipboard.writeText('{{ cat_id }}')">Kopioi ID</button>
+        </span>
     </div>
     {% endfor %}
     {% else %}

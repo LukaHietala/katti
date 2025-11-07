@@ -27,7 +27,18 @@ if not PUBLIC_KEY:
 BASE_URL = f"https://discord.com/api/v10/applications/{APP_ID}/commands"
 HEADERS = {"Authorization": f"Bot {BOT_TOKEN}", "Content-Type": "application/json"}
 
-COMMANDS = [{"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, funny)", "required": False}]}]
+COMMANDS = [
+    {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, funny)", "required": False}]},
+    {
+        "name": "kissa-sanoo",
+        "options": [
+            {"type": 3, "name": "lause", "description": "Mitä kissa sanoo?", "required": True},
+            {"type": 3, "name": "id", "description": "Söpö mirri mielessä? Katso katti.wisdurm.fi sivulta tämän ID.", "required": False},
+            {"type": 3, "name": "tagi", "description": "Kissan tagi (esim. cute, funny)", "required": False}
+        ]
+    },
+    {"name": "ohjeet", "description": "Ohjeet katin käyttöön"}
+]
 
 
 def verify_request(public_key, signature, timestamp, body):
@@ -92,6 +103,61 @@ def interactions():
                         "flags": 64 # ephemeral viesti
                     }
                 })
+        
+        if command_name == "kissa-sanoo":
+            options = data.get("data", {}).get("options", [])
+            
+            # gifit tulevaisuudessa koska discord rajoitukset
+            # kuvan muokkaus logiikka serverille
+
+            text = ""
+            cat_id = None
+            tag = None
+            
+            for option in options:
+                if option.get("name") == "text":
+                    text = option.get("value", "")
+                elif option.get("name") == "id":
+                    cat_id = option.get("value")
+                elif option.get("name") == "tag":
+                    tag = option.get("value")
+            
+            try:
+                if cat_id:
+                    url = f"https://cataas.com/cat/{cat_id}/says/{text}?json=true"
+                elif tag:
+                    url = f"https://cataas.com/cat/{tag}/says/{text}?json=true"
+                else:
+                    url = f"https://cataas.com/cat/says/{text}?json=true"
+                
+                response = requests.get(url)
+                response.raise_for_status()
+                cat_data = response.json()
+                image_url = f"{cat_data['url']}&t={time.time_ns()}"
+                
+                return jsonify({
+                    "type": 4,
+                    "data": {
+                        "embeds": [{"image": {"url": image_url}}],
+                    }
+                })
+            except Exception as e:
+                return jsonify({
+                    "type": 4,
+                    "data": {
+                        "content": f"Virhe kissan haussa, ehkä huono tagi?",
+                        "flags": 64 
+                    }
+                })
+        
+        if command_name == "ohjeet":
+            return jsonify({
+                "type": 4,
+                "data": {
+                    "embeds": [{"image": {"url": "https://cataas.com/cat/dGHQY0rqSzbmiaJO"}}],
+                    "flags": 64 
+                }
+            })
     
     return jsonify({"error": "unknown interaction"}), 400
 
