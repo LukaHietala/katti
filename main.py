@@ -28,18 +28,61 @@ BASE_URL = f"https://discord.com/api/v10/applications/{APP_ID}/commands"
 HEADERS = {"Authorization": f"Bot {BOT_TOKEN}", "Content-Type": "application/json"}
 
 COMMANDS = [
-    {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, loaf, lazy)", "required": False}]},
+    {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tagi", "description": "Kissan tyyppi (esim. cute, loaf, lazy)", "required": False, "autocomplete": True}]},
     {
         "name": "kissa-sanoo",
         "description": "Kissa sanoo jotain",
         "options": [
             {"type": 3, "name": "lause", "description": "Mitä kissa sanoo?", "required": True},
             {"type": 3, "name": "id", "description": "Söpö mirri mielessä? Katso katti.wisdurm.fi sivulta tämän ID.", "required": False},
-            {"type": 3, "name": "tagi", "description": "Kissan tagi (esim. evil, funny)", "required": False}
+            {"type": 3, "name": "tagi", "description": "Kissan tagi (esim. evil, funny)", "required": False, "autocomplete": True}
         ]
     },
     {"name": "ohjeet", "description": "Ohjeet katin käyttöön"}
 ]
+
+# Tagejä on oli 1000 niin säilytetään ne muistissa 1 tunti kerrallaan
+class TagCache:
+    def __init__(self):
+        self.tags = []
+        self.last_updated = 0
+        self.cache_duration = 3600 # 1 tunti
+    
+    def get_tags(self):
+        if not self.tags or (time.time() - self.last_updated) > self.cache_duration:
+            self.fetch_tags()
+        return self.tags
+    
+    def fetch_tags(self):
+        try:
+            response = requests.get("https://cataas.com/api/tags", timeout=5)
+            response.raise_for_status()
+            self.tags = response.json()
+            self.last_updated = time.time()
+        except Exception as e:
+            print(f"Virhe tagien haussa: {e}")
+
+    def filter(self, query):
+        limit = 25 # discordin limit on 25
+        tags = self.get_tags()
+        
+        if not query:
+            return tags[:limit]
+        
+        query_lower = query.lower()
+        
+        # tagit jotka alkaa queryllä
+        starts_with = [tag for tag in tags if tag.lower().startswith(query_lower)]
+        
+        # tagit jotka sisältää queryn
+        if len(starts_with) < limit:
+            contains = [tag for tag in tags if query_lower in tag.lower() and tag not in starts_with]
+            starts_with.extend(contains)
+        
+        return starts_with[:limit]
+
+
+tag_cache = TagCache()
 
 
 def verify_request(public_key, signature, timestamp, body):
@@ -76,13 +119,35 @@ def interactions():
     if data.get("type") == 1:
         return jsonify({"type": 1})
     
+    # autocomplete interaktio
+    if data.get("type") == 4:
+        options = data.get("data", {}).get("options", [])
+        
+        # etsi fokuksessa oleva kenttä
+        for option in options:
+            if option.get("focused") and option.get("name") == "tagi":
+                query = option.get("value", "")
+                filtered_tags = tag_cache.filter(query.strip())
+                choices = [{"name": tag, "value": tag} for tag in filtered_tags if tag]
+                
+                return jsonify({
+                    "type": 8,
+                    "data": {"choices": choices}
+                })
+        
+        # jos ei tag kenttä fokuksessa
+        return jsonify({
+            "type": 8,
+            "data": {"choices": []}
+        })
+    
     # komennot
     if data.get("type") == 2:
         command_name = data.get("data", {}).get("name")
         
         if command_name == "kissa":
             options = data.get("data", {}).get("options", [])
-            tag = options[0].get("value", "") if options else ""
+            tag = options[0].get("value", "").strip() if options else ""
             user = data.get("member", {}).get("user") or data.get("user", {})
             user_id = user.get("id", "tuntematon?")
             username = user.get("username", "tuntematon?")
@@ -117,11 +182,11 @@ def interactions():
             
             for option in options:
                 if option.get("name") == "lause":
-                    text = option.get("value", "")
+                    text = option.get("value", "").strip()
                 elif option.get("name") == "id":
-                    cat_id = option.get("value")
+                    cat_id = option.get("value", "").strip()
                 elif option.get("name") == "tagi":
-                    tag = option.get("value")
+                    tag = option.get("value", "").strip()
             
             try:
                 if cat_id:
