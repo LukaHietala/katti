@@ -28,14 +28,14 @@ BASE_URL = f"https://discord.com/api/v10/applications/{APP_ID}/commands"
 HEADERS = {"Authorization": f"Bot {BOT_TOKEN}", "Content-Type": "application/json"}
 
 COMMANDS = [
-    {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, funny)", "required": False}]},
+    {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, loaf, lazy)", "required": False}]},
     {
         "name": "kissa-sanoo",
         "description": "Kissa sanoo jotain",
         "options": [
             {"type": 3, "name": "lause", "description": "Mitä kissa sanoo?", "required": True},
             {"type": 3, "name": "id", "description": "Söpö mirri mielessä? Katso katti.wisdurm.fi sivulta tämän ID.", "required": False},
-            {"type": 3, "name": "tagi", "description": "Kissan tagi (esim. cute, funny)", "required": False}
+            {"type": 3, "name": "tagi", "description": "Kissan tagi (esim. evil, funny)", "required": False}
         ]
     },
     {"name": "ohjeet", "description": "Ohjeet katin käyttöön"}
@@ -155,7 +155,7 @@ def interactions():
             return jsonify({
                 "type": 4,
                 "data": {
-                    "embeds": [{"image": {"url": "https://cataas.com/cat/dGHQY0rqSzbmiaJO"}}],
+                    "embeds": [{"image": {"url": "https://cataas.com/cat/QAtGIn7ufSOehRp6"}}],
                     "flags": 64 
                 }
             })
