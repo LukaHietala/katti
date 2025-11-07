@@ -31,6 +31,7 @@ COMMANDS = [
     {"name": "kissa", "description": "Hae kissankuva", "options": [{"type": 3, "name": "tag", "description": "Kissan tyyppi (esim. cute, funny)", "required": False}]},
     {
         "name": "kissa-sanoo",
+        "description": "Kissa sanoo jotain",
         "options": [
             {"type": 3, "name": "lause", "description": "Mitä kissa sanoo?", "required": True},
             {"type": 3, "name": "id", "description": "Söpö mirri mielessä? Katso katti.wisdurm.fi sivulta tämän ID.", "required": False},
@@ -115,11 +116,11 @@ def interactions():
             tag = None
             
             for option in options:
-                if option.get("name") == "text":
+                if option.get("name") == "lause":
                     text = option.get("value", "")
                 elif option.get("name") == "id":
                     cat_id = option.get("value")
-                elif option.get("name") == "tag":
+                elif option.get("name") == "tagi":
                     tag = option.get("value")
             
             try:
